@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learnify - Online Courses</title>
+    <script src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"></script>
+    <style>
+        :root {
+            --primary: #5624d0;
+            --secondary: #f5f5f5;
+            --accent: #a435f0;
+            --text: #1c1d1f;
+            --light-text: #6a6f73;
+            --success: #3cb46e;
+            --warning: #f3ca8c;
+            --danger: #e59898;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f7f9fa;
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: var(--primary);
+            border-radius: 8px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: var(--primary);
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent);
+        }
+        
+        .btn-outline:hover {
+            background-color: rgba(86, 36, 208, 0.1);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(to right, #6c2bd9, #8a4fff);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+        
+        /* Courses Section */
+        .courses {
+            padding: 60px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 2rem;
+            color: var(--text);
+        }
+        
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .course-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .course-image {
+            height: 180px;
+            background-color: #ddd;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .course-content {
+            padding: 20px;
+        }
+        
+        .course-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+        
+        .course-instructor {
+            color: var(--light-text);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .course-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .rating-stars {
+            color: #e5980c;
+        }
+        
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .course-price {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--text);
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #1c1d1f;
+            color: white;
+            padding: 40px 0;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .footer-column h3 {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column a {
+            color: #c0c4fc;
+            text-decoration: none;
+        }
+        
+        .footer-column a:hover {
+            text-decoration: underline;
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #3e4143;
+            color: #a5a5a5;
+        }
+        
+        /* Auth Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--light-text);
+        }
+        
+        .modal-title {
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .form-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .form-submit:hover {
+            background-color: var(--accent);
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--light-text);
+        }
+        
+        .form-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        /* User Section */
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                gap: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .course-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Navigation -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo">
+                    <div class="logo-icon">L</div>
+                    <span>Learnify</span>
+                </a>
+                
+                <nav>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Courses</a></li>
+                        <li><a href="#">Categories</a></li>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="auth-buttons" id="auth-buttons">
+                    <button class="btn btn-outline" onclick="openModal('signin-modal')">Sign in</button>
+                    <button class="btn btn-primary" onclick="openModal('signup-modal')">Sign up</button>
+                </div>
+                
+                <div class="user-section" id="user-section" style="display: none;">
+                    <div class="user-avatar" id="user-avatar">U</div>
+                    <button class="btn btn-outline" onclick="signOut()">Sign out</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Learn on your schedule</h1>
+            <p>Study any topic, anytime. Explore thousands of courses starting at $9.99 each.</p>
+            <button class="btn btn-primary" style="padding: 12px 24px; font-size: 1.1rem;">
+                Get Started Today
+            </button>
+        </div>
+    </section>
+    
+    <!-- Courses Section -->
+    <section class="courses">
+        <div class="container">
+            <h2 class="section-title">Popular Courses</h2>
+            
+            <div class="course-grid">
+                <!-- Course 1 -->
+                <div class="course-card">
+                    <div class="course-image" style="background-color: #3cbea9;"></div>
+                    <div class="course-content">
+                        <h3 class="course-title">Web Development Bootcamp</h3>
+                        <p class="course-instructor">Sarah Johnson</p>
+                        <div class="course-rating">
+                            <span class="rating-stars">★★★★★</span>
+                            <span>4.7 (12,540)</span>
+                        </div>
+                        <div class="course-meta">
+                            <div class="course-price">$84.99</div>
+                            <button class="btn btn-primary">Enroll Now</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Course 2 -->
+                <div class="course-card">
+                    <div class="course-image" style="background-color: #e59898;"></div>
+                    <div class="course-content">
+                        <h3 class="course-title">Python for Data Science</h3>
+                        <p class="course-instructor">Michael Chen</p>
+                        <div class="course-rating">
+                            <span class="rating-stars">★★★★★</span>
+                            <span>4.8 (8,932)</span>
+                        </div>
+                        <div class="course-meta">
+                            <div class="course-price">$74.99</div>
+                            <button class="btn btn-primary">Enroll Now</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Course 3 -->
+                <div class="course-card">
+                    <div class="course-image" style="background-color: #a435f0;"></div>
+                    <div class="course-content">
+                        <h3 class="course-title">Complete Digital Marketing Course</h3>
+                        <p class="course-instructor">Emily Rodriguez</p>
+                        <div class="course-rating">
+                            <span class="rating-stars">★★★★☆</span>
+                            <span>4.6 (11,235)</span>
+                        </div>
+                        <div class="course-meta">
+                            <div class="course-price">$89.99</div>
+                            <button class="btn btn-primary">Enroll Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Learnify</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Categories</h3>
+                    <ul>
+                        <li><a href="#">Development</a></li>
+                        <li><a href="#">Business</a></li>
+                        <li><a href="#">Design</a></li>
+                        <li><a href="#">Marketing</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Sitemap</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2023 Learnify. All rights reserved.
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Sign In Modal -->
+    <div class="modal" id="signin-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('signin-modal')">&times;</span>
+            <h2 class="modal-title">Sign In</h2>
+            <form id="signin-form">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="form-submit">Sign In</button>
+            </form>
+            <div class="form-footer">
+                Don't have an account? <a href="#" onclick="switchModal('signin-modal', 'signup-modal')">Sign up</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sign Up Modal -->
+    <div class="modal" id="signup-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('signup-modal')">&times;</span>
+            <h2 class="modal-title">Sign Up</h2>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="signup-name">Full Name</label>
+                    <input type="text" id="signup-name" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" placeholder="Create a password" required>
+                </div>
+                <button type="submit" class="form-submit">Sign Up</button>
+            </form>
+            <div class="form-footer">
+                Already have an account? <a href="#" onclick="switchModal('signup-modal', 'signin-modal')">Sign in</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Clerk
+        const clerkPublishableKey = 'pk_test_ZnVua3ktd2hpcHBldC0zNS5jbGVyay5hY2NvdW50cy5kZXYk';
+        
+        // Simulated user data (in a real app, this would come from Clerk)
+        let currentUser = null;
+        
+        // DOM Elements
+        const authButtons = document.getElementById('auth-buttons');
+        const userSection = document.getElementById('user-section');
+        const userAvatar = document.getElementById('user-avatar');
+        const signInForm = document.getElementById('signin-form');
+        const signUpForm = document.getElementById('signup-form');
+        
+        // Check if user is logged in (simulated)
+        function checkAuthStatus() {
+            // In a real app, this would check with Clerk
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (user) {
+                currentUser = user;
+                authButtons.style.display = 'none';
+                userSection.style.display = 'flex';
+                userAvatar.textContent = user.name.charAt(0);
+            } else {
+                authButtons.style.display = 'flex';
+                userSection.style.display = 'none';
+            }
+        }
+        
+        // Modal Functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        function switchModal(fromId, toId) {
+            closeModal(fromId);
+            openModal(toId);
+        }
+        
+        // Auth Functions
+        function signIn(email, password) {
+            // Simulated sign in (in a real app, this would use Clerk)
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                checkAuthStatus();
+                closeModal('signin-modal');
+                alert('Successfully signed in!');
+                return true;
+            } else {
+                alert('Invalid email or password');
+                return false;
+            }
+        }
+        
+        function signUp(name, email, password) {
+            // Simulated sign up (in a real app, this would use Clerk)
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            if (users.some(u => u.email === email)) {
+                alert('User with this email already exists');
+                return false;
+            }
+            
+            const newUser = { name, email, password };
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            currentUser = newUser;
+            localStorage.setItem('currentUser', JSON.stringify(newUser));
+            checkAuthStatus();
+            closeModal('signup-modal');
+            alert('Account created successfully!');
+            return true;
+        }
+        
+        function signOut() {
+            // Simulated sign out (in a real app, this would use Clerk)
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            checkAuthStatus();
+            alert('Successfully signed out!');
+        }
+        
+        // Event Listeners
+        signInForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            signIn(email, password);
+        });
+        
+        signUpForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            signUp(name, email, password);
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.style.display = 'none';
+            }
+        });
+        
+        // Initialize
+        checkAuthStatus();
+    </script>
+</body>
+</html>
